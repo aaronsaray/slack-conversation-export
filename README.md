@@ -26,3 +26,4 @@ There's a couple things to know about this utility.
 ## Todo
 
 - [ ] Better logging configuration for Winston
+- [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file

@@ -11,13 +11,19 @@ class SlackConversationExport {
     this.slack = new Slack({ token });
     this.rootDestination = rootDestination;
     this.exportUsers = this.exportUsers.bind(this);
+    this.exportConversations = this.exportConversations.bind(this);
   }
 
   export() {
     this.logger.info("Begin export");
 
     this.createDateTimeFolder()
-      .then(this.exportUsers)
+      .then(destination => {
+        return Promise.all([
+          this.exportUsers(destination),
+          this.exportConversations(destination)
+        ]);
+      })
       .then(() => {
         this.logger.info("End export");
       });
@@ -38,7 +44,7 @@ class SlackConversationExport {
       this.logger.debug("Retrieving users page " + page, { nextCursor });
 
       return this.slack.users
-        .list({ limit: 100, cursor: nextCursor })
+        .list({ limit: 2, cursor: nextCursor })
         .then(results => {
           results.members.forEach(member => {
             jsonwriter.write(member);
@@ -55,6 +61,87 @@ class SlackConversationExport {
       jsonwriter.end();
       writeStream.end();
       this.logger.info("Finished retrieving users.");
+    });
+  }
+
+  exportConversations(destination) {
+    this.logger.info("Begin conversation export.");
+
+    let page = 0;
+
+    const pager = nextCursor => {
+      page++;
+      this.logger.debug("Retrieving conversations page " + page, {
+        nextCursor
+      });
+
+      return this.slack.conversations
+        .list({
+          limit: 2,
+          cursor: nextCursor,
+          exclude_archived: false,
+          types: "public_channel,private_channel,mpim,im"
+        })
+        .then(results => {
+          results.channels.forEach(channel => {
+            this.exportIndividualConversation(channel, destination);
+          });
+
+          if (results.response_metadata.next_cursor) {
+            return pager(results.response_metadata.next_cursor);
+          }
+        });
+    };
+
+    return pager().then(() => {
+      this.logger.info("Finished retrieving conversations.");
+    });
+  }
+
+  exportIndividualConversation(channel, destination) {
+    const channelId = channel.id;
+    const userFile = destination + "/" + channelId + ".json";
+    this.logger.info("Begin individual conversation export to " + userFile);
+
+    const jsonwriter = JSONStream.stringify("[", ",", "]");
+    const writeStream = fs.createWriteStream(userFile);
+    jsonwriter.pipe(writeStream);
+
+    let page = 0;
+
+    const pager = nextCursor => {
+      page++;
+      this.logger.debug(
+        "Retrieving individual conversation " + channelId + " page " + page,
+        {
+          nextCursor
+        }
+      );
+
+      return this.slack.conversations
+        .history({
+          channel: channelId,
+          limit: 2,
+          cursor: nextCursor
+        })
+        .then(results => {
+          results.messages.forEach(message => {
+            jsonwriter.write(message);
+          });
+
+          if (results.response_metadata.next_cursor) {
+            return pager(results.response_metadata.next_cursor);
+          }
+        });
+    };
+
+    return pager().then(() => {
+      this.logger.debug("Closing streams.");
+      jsonwriter.end();
+      writeStream.end();
+      this.logger.info(
+        "Finished retrieving individual conversation " + channelId
+      );
     });
   }
 
