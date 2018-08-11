@@ -47,11 +47,38 @@ const getResolvedAndWriteableFolder = (folder, logger) => {
  * - create the named folder
  */
 const exportFunction = (rootFolder, token, logger) => {
-  createDateTimeFolder(rootFolder, logger);
+  const destinationFolder = createDateTimeFolder(rootFolder, logger);
 
   const slack = new Slack({ token });
 
-  slack.api.test({ hello: "world" }, console.log);
+  const userFile = destinationFolder + "/users.json";
+  const writeStream = fs.createWriteStream(userFile);
+
+  const page = nextCursor => {
+    return new Promise(resolve => {
+      slack.users
+        .list({
+          limit: 2,
+          cursor: nextCursor
+        })
+        .then(results => {
+          results.members.forEach(member => {
+            writeStream.write(JSON.stringify(member) + ",");
+          });
+
+          if (results.response_metadata.next_cursor) {
+            return resolve(page(results.response_metadata.next_cursor));
+          } else {
+            writeStream.end();
+          }
+          resolve();
+        });
+    });
+  };
+
+  page().then(() => {
+    console.log("final then");
+  });
 };
 
 module.exports = {
