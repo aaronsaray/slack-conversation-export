@@ -10,13 +10,14 @@ Want to archive your Slack conversations? This might be the tool for you!
 
 `chmod +x index.js`
 
-2. Run this from the command line:
+3. Run this from the command line:
 
 `./index.js -t MY_TOKEN_HERE -d PATH_TO_EXPORT_DIRECTORY`
 
 The script will create a folder named after the current date+time in the export directory. Inside of there, it will create the following files:
 
 - **users.json** The users you have access to view
+- **conversations.json** The meta information about all the conversations you're part of
 - **ABC###.json** The conversations you have access to view. This includes public channels, private channels you're a member of, DM's and multi-person-DMs. `ABC###` refers to the internal conversation identifier.
 
 ## Limitations
