@@ -1,5 +1,4 @@
-const path = require("path"),
-  fs = require("fs"),
+const fs = require("fs"),
   Slack = require("slack"),
   JSONStream = require("JSONStream");
 
@@ -8,24 +7,23 @@ class SlackConversationExport {
     this.logger = logger;
     this.slack = new Slack({ token });
     this.rootDestination = rootDestination;
+    this.exportUsers = this.exportUsers.bind(this);
   }
 
   export() {
     this.logger.info("Begin export");
 
     this.createDateTimeFolder()
-      .then(destination => {
-        return this.exportUsers(destination);
-      })
+      .then(this.exportUsers)
       .then(() => {
-        this.logger.info("Export finished.");
+        this.logger.info("End export");
       });
   }
 
   exportUsers(destination) {
-    this.logger.info("Begin user export.");
-
     const userFile = destination + "/users.json";
+    this.logger.info("Begin user export to " + userFile);
+
     const jsonwriter = JSONStream.stringify("[", ",", "]");
     const writeStream = fs.createWriteStream(userFile);
     jsonwriter.pipe(writeStream);
@@ -33,32 +31,28 @@ class SlackConversationExport {
     let page = 0;
 
     const pager = nextCursor => {
-      return new Promise(resolve => {
-        page++;
-        this.logger.info("Retrieving users page " + page, { nextCursor });
+      page++;
+      this.logger.debug("Retrieving users page " + page, { nextCursor });
 
-        this.slack.users
-          .list({
-            limit: 2,
-            cursor: nextCursor
-          })
-          .then(results => {
-            results.members.forEach(member => {
-              jsonwriter.write(member);
-            });
-
-            if (results.response_metadata.next_cursor) {
-              return resolve(pager(results.response_metadata.next_cursor));
-            } else {
-              jsonwriter.end();
-              writeStream.end();
-            }
-            resolve();
+      return this.slack.users
+        .list({ limit: 2, cursor: nextCursor })
+        .then(results => {
+          results.members.forEach(member => {
+            jsonwriter.write(member);
           });
-      });
+
+          if (results.response_metadata.next_cursor) {
+            return pager(results.response_metadata.next_cursor);
+          }
+        });
     };
 
-    return pager();
+    return pager().then(() => {
+      this.logger.debug("Closing streams.");
+      jsonwriter.end();
+      writeStream.end();
+      this.logger.info("Finished retrieving users.");
+    });
   }
 
   createDateTimeFolder() {
@@ -74,7 +68,7 @@ class SlackConversationExport {
       const destination = this.rootDestination + "/" + folder;
       fs.mkdirSync(destination);
 
-      this.logger.info("Created folder " + destination);
+      this.logger.debug("Created folder " + destination);
 
       resolve(destination);
     });

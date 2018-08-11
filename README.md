@@ -24,3 +24,5 @@ There's a couple things to know about this utility.
 - This script does not combine or make the information viewable. It just exports the data. In the future I might make an interface to do this, but I wouldn't hold your breath. :)
 
 ## Todo
+
+- [ ] Better logging configuration for Winston

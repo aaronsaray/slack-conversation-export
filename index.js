@@ -5,13 +5,11 @@
  * SlackConversationExport that everything is good to go
  */
 
-const path = require("path");
-const fs = require("fs");
-const SlackConversationExport = require("./src/slack-conversation-export");
+const path = require("path"),
+  fs = require("fs"),
+  winston = require("winston"),
+  SlackConversationExport = require("./src/slack-conversation-export");
 
-const winston = require("winston");
-
-// @todo make better logger (more robust)
 const logger = winston.createLogger({
   level: "info",
   transports: [
@@ -40,6 +38,7 @@ const options = require("yargs")
 
 // resolve and test access
 const rootDestination = path.resolve(options.destination);
+logger.debug("Testing access to write to filesystem", { rootDestination });
 fs.accessSync(rootDestination, fs.constants.W_OK);
 
 const exporter = new SlackConversationExport(
