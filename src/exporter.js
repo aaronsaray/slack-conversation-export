@@ -2,7 +2,8 @@
 
 const path = require("path"),
   fs = require("fs"),
-  Slack = require("slack");
+  Slack = require("slack"),
+  JSONStream = require("JSONStream");
 
 const createDateTimeFolder = (rootFolder, logger) => {
   const date = new Date();
@@ -52,7 +53,9 @@ const exportFunction = (rootFolder, token, logger) => {
   const slack = new Slack({ token });
 
   const userFile = destinationFolder + "/users.json";
+  const jsonwriter = JSONStream.stringify("[", ",", "]");
   const writeStream = fs.createWriteStream(userFile);
+  jsonwriter.pipe(writeStream);
 
   const page = nextCursor => {
     return new Promise(resolve => {
@@ -63,12 +66,13 @@ const exportFunction = (rootFolder, token, logger) => {
         })
         .then(results => {
           results.members.forEach(member => {
-            writeStream.write(JSON.stringify(member) + ",");
+            jsonwriter.write(member);
           });
 
           if (results.response_metadata.next_cursor) {
             return resolve(page(results.response_metadata.next_cursor));
           } else {
+            jsonwriter.end();
             writeStream.end();
           }
           resolve();
