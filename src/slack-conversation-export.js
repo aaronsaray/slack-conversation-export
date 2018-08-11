@@ -1,6 +1,7 @@
 const fs = require("fs"),
   Slack = require("slack"),
-  JSONStream = require("JSONStream");
+  JSONStream = require("JSONStream"),
+  Bottleneck = require("bottleneck");
 
 /**
  * Main Class
@@ -25,6 +26,7 @@ class SlackConversationExport {
         ]);
       })
       .then(() => {
+        // right now this doesn't wait till all the scheduled stuff is done
         this.logger.info("End export");
       });
   }
@@ -39,12 +41,18 @@ class SlackConversationExport {
 
     let page = 0;
 
+    // 20+ / minute  60,000 / 20 = 3000 (3 secs), making 4 seconds just to be safe (4000)
+    const tier2MethodLimiterForUsersList = new Bottleneck({
+      maxConcurrent: 1,
+      minTime: 4000
+    });
+
     const pager = nextCursor => {
       page++;
       this.logger.debug("Retrieving users page " + page, { nextCursor });
 
-      return this.slack.users
-        .list({ limit: 2, cursor: nextCursor })
+      return tier2MethodLimiterForUsersList
+        .schedule(this.slack.users.list, { limit: 100, cursor: nextCursor })
         .then(results => {
           results.members.forEach(member => {
             jsonwriter.write(member);
@@ -57,7 +65,7 @@ class SlackConversationExport {
     };
 
     return pager().then(() => {
-      this.logger.debug("Closing streams.");
+      this.logger.debug("Closing user streams.");
       jsonwriter.end();
       writeStream.end();
       this.logger.info("Finished retrieving users.");
@@ -65,9 +73,27 @@ class SlackConversationExport {
   }
 
   exportConversations(destination) {
-    this.logger.info("Begin conversation export.");
+    const userFile = destination + "/conversations.json";
+    this.logger.info("Begin user export to " + userFile);
+
+    const jsonwriter = JSONStream.stringify("[", ",", "]");
+    const writeStream = fs.createWriteStream(userFile);
+    jsonwriter.pipe(writeStream);
 
     let page = 0;
+
+    // 20+ / minute  60,000 / 20 = 3000 (3 secs), making 4 seconds just to be safe (4000)
+    const tier2MethodLimiterForConversationsList = new Bottleneck({
+      maxConcurrent: 1,
+      minTime: 4000
+    });
+
+    // 50+ / minute  60,000 / 20 = 1200 (1.2 secs), to make it safe, making it 2 seconds (2000)
+    // note we have to have this outside of the individual method because otherwise it'll just create copies of itself
+    const tier3MethodLimiterForConversationHistory = new Bottleneck({
+      maxConcurrent: 1,
+      minTime: 2000
+    });
 
     const pager = nextCursor => {
       page++;
@@ -75,16 +101,21 @@ class SlackConversationExport {
         nextCursor
       });
 
-      return this.slack.conversations
-        .list({
-          limit: 2,
+      return tier2MethodLimiterForConversationsList
+        .schedule(this.slack.conversations.list, {
+          limit: 100,
           cursor: nextCursor,
           exclude_archived: false,
           types: "public_channel,private_channel,mpim,im"
         })
         .then(results => {
           results.channels.forEach(channel => {
-            this.exportIndividualConversation(channel, destination);
+            jsonwriter.write(channel);
+            this.exportIndividualConversation(
+              channel,
+              destination,
+              tier3MethodLimiterForConversationHistory
+            );
           });
 
           if (results.response_metadata.next_cursor) {
@@ -94,11 +125,18 @@ class SlackConversationExport {
     };
 
     return pager().then(() => {
+      this.logger.debug("Closing conversations streams.");
+      jsonwriter.end();
+      writeStream.end();
       this.logger.info("Finished retrieving conversations.");
     });
   }
 
-  exportIndividualConversation(channel, destination) {
+  exportIndividualConversation(
+    channel,
+    destination,
+    tier3MethodLimiterForConversationHistory
+  ) {
     const channelId = channel.id;
     const userFile = destination + "/" + channelId + ".json";
     this.logger.info("Begin individual conversation export to " + userFile);
@@ -118,10 +156,10 @@ class SlackConversationExport {
         }
       );
 
-      return this.slack.conversations
-        .history({
+      return tier3MethodLimiterForConversationHistory
+        .schedule(this.slack.conversations.history, {
           channel: channelId,
-          limit: 2,
+          limit: 100,
           cursor: nextCursor
         })
         .then(results => {
@@ -129,14 +167,17 @@ class SlackConversationExport {
             jsonwriter.write(message);
           });
 
-          if (results.response_metadata.next_cursor) {
+          if (
+            results.response_metadata &&
+            results.response_metadata.next_cursor
+          ) {
             return pager(results.response_metadata.next_cursor);
           }
         });
     };
 
     return pager().then(() => {
-      this.logger.debug("Closing streams.");
+      this.logger.debug("Closing conversation " + channelId + " streams.");
       jsonwriter.end();
       writeStream.end();
       this.logger.info(

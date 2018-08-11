@@ -11,13 +11,12 @@ const path = require("path"),
   SlackConversationExport = require("./src/slack-conversation-export");
 
 const logger = winston.createLogger({
-  level: "info",
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.simple(),
-      handleExceptions: true
-    })
-  ]
+  level: "debug",
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.simple()
+  ),
+  transports: [new winston.transports.Console()]
 });
 
 const options = require("yargs")
