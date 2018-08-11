@@ -1,14 +1,23 @@
 #!/usr/bin/env node
 
-const SlackConversationExport = require("./src/slack-conversation-export"),
-  winston = require("winston");
+/**
+ * The CLI sets up all the options properly and validates information.  We expect byt he time it hits
+ * SlackConversationExport that everything is good to go
+ */
 
-// temporary configuration of logger, should be more robust
+const path = require("path");
+const fs = require("fs");
+const SlackConversationExport = require("./src/slack-conversation-export");
+
+const winston = require("winston");
+
+// @todo make better logger (more robust)
 const logger = winston.createLogger({
   level: "info",
   transports: [
     new winston.transports.Console({
-      format: winston.format.simple()
+      format: winston.format.simple(),
+      handleExceptions: true
     })
   ]
 });
@@ -29,10 +38,13 @@ const options = require("yargs")
   })
   .help().argv;
 
-const exporter = new SlackConversationExport(
-  options.token,
-  options.destination,
-  logger
-);
+// resolve and test access
+const rootDestination = path.resolve(options.destination);
+fs.accessSync(rootDestination, fs.constants.W_OK);
 
+const exporter = new SlackConversationExport(
+  logger,
+  options.token,
+  rootDestination
+);
 exporter.export();
