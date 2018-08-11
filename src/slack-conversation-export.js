@@ -38,7 +38,7 @@ class SlackConversationExport {
       this.logger.debug("Retrieving users page " + page, { nextCursor });
 
       return this.slack.users
-        .list({ limit: 2, cursor: nextCursor })
+        .list({ limit: 100, cursor: nextCursor })
         .then(results => {
           results.members.forEach(member => {
             jsonwriter.write(member);
