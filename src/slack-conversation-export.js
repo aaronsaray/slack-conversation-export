@@ -2,6 +2,9 @@ const fs = require("fs"),
   Slack = require("slack"),
   JSONStream = require("JSONStream");
 
+/**
+ * Main Class
+ */
 class SlackConversationExport {
   constructor(logger, token, rootDestination) {
     this.logger = logger;
@@ -75,4 +78,26 @@ class SlackConversationExport {
   }
 }
 
-module.exports = SlackConversationExport;
+/**
+ * Define the public interface
+ *
+ * Is this ok? It works for me currently... probably cuz this app is so simple.
+ */
+
+let publicSlackConversationExport;
+
+class PublicSlackConversationExport {
+  constructor(logger, token, rootDestination) {
+    publicSlackConversationExport = new SlackConversationExport(
+      logger,
+      token,
+      rootDestination
+    );
+  }
+
+  export() {
+    publicSlackConversationExport.export();
+  }
+}
+
+module.exports = PublicSlackConversationExport;
