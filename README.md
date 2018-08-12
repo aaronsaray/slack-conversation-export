@@ -35,6 +35,7 @@ There's a couple things to know about this utility.
 
 ## Todo
 
+- [ ] Handle token in env too instead of command line (I'm lookin at you .bash_history)
 - [ ] Zip the output instead? Or give an option to do so
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
