@@ -20,6 +20,11 @@ The script will create a folder named after the current date+time in the export 
 - **conversations.json** The meta information about all the conversations you're part of
 - **ABC###.json** The conversations you have access to view. This includes public channels, private channels you're a member of, DM's and multi-person-DMs. `ABC###` refers to the internal conversation identifier.
 
+## Viewing Content
+
+The main purpose of this is to archive information in json form for later parsing. However, you may want to follow a sibling project I have going on that parses this format and builds a Jekyll-based static site from it.
+You can visit [slack-conversation-export-display](https://github.com/aaronsaray/slack-conversation-export-display) to find out more.
+
 ## Limitations
 
 There's a couple things to know about this utility.
@@ -30,10 +35,10 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Child bottlenecks from retrieve individual conversation don't hold up the parent conversation promise, but should
+- [ ] Zip the output instead? Or give an option to do so
+- [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file
 - [ ] Handle rate limiting better (ie - making sure you can recover from it)
 - [ ] Handle errors better if the interwebs goes away for a bit
 - [ ] Figure out what to do if a failed download - delete it?
-- [ ] Investigate if I can use jekyll to build out the interface using data sources

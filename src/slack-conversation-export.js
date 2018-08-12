@@ -26,7 +26,6 @@ class SlackConversationExport {
         ]);
       })
       .then(() => {
-        // right now this doesn't wait till all the scheduled stuff is done
         this.logger.info("End export");
       });
   }
@@ -108,19 +107,26 @@ class SlackConversationExport {
           types: "public_channel,private_channel,mpim,im"
         })
         .then(results => {
+          let childPromises = [];
+
           results.channels.forEach(channel => {
             jsonwriter.write(channel);
 
-            this.exportIndividualConversation(
-              channel,
-              destination,
-              tier3MethodLimiterForConversationHistory
+            childPromises.push(
+              this.exportIndividualConversation(
+                channel,
+                destination,
+                tier3MethodLimiterForConversationHistory
+              )
             );
           });
 
           if (results.response_metadata.next_cursor) {
             return pager(results.response_metadata.next_cursor);
           }
+
+          // the last time through it needs to wait on all the children, not a recursive call of itself
+          return Promise.all(childPromises);
         });
     };
 
