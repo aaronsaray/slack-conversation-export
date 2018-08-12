@@ -67,7 +67,6 @@ class SlackConversationExport {
     return pager().then(() => {
       this.logger.debug("Closing user streams.");
       jsonwriter.end();
-      writeStream.end();
       this.logger.info("Finished retrieving users.");
     });
   }
@@ -111,6 +110,7 @@ class SlackConversationExport {
         .then(results => {
           results.channels.forEach(channel => {
             jsonwriter.write(channel);
+
             this.exportIndividualConversation(
               channel,
               destination,
@@ -127,7 +127,6 @@ class SlackConversationExport {
     return pager().then(() => {
       this.logger.debug("Closing conversations streams.");
       jsonwriter.end();
-      writeStream.end();
       this.logger.info("Finished retrieving conversations.");
     });
   }
@@ -179,7 +178,6 @@ class SlackConversationExport {
     return pager().then(() => {
       this.logger.debug("Closing conversation " + channelId + " streams.");
       jsonwriter.end();
-      writeStream.end();
       this.logger.info(
         "Finished retrieving individual conversation " + channelId
       );
