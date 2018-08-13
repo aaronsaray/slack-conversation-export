@@ -2,7 +2,8 @@ const fs = require("fs"),
   Slack = require("slack"),
   JSONStream = require("JSONStream"),
   Bottleneck = require("bottleneck"),
-  archiver = require("archiver");
+  archiver = require("archiver"),
+  del = require("del");
 
 /**
  * Main Class
@@ -29,6 +30,7 @@ class SlackConversationExport {
       .then(([destination]) => {
         return this.zip(destination);
       })
+      .then(folder => del(folder))
       .then(() => {
         this.logger.info("End export");
       });
@@ -205,6 +207,8 @@ class SlackConversationExport {
 
       const output = fs.createWriteStream(zipFile);
       output.on("close", () => {
+        // probably bad to resolve the source folder and not the zip itself, but it makes my other code better
+        // probably want to figure this out and fix it better, maybe with a higher up nested promise
         resolve(sourceFolder);
       });
 

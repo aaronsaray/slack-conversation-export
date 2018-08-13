@@ -35,10 +35,10 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Delete the source folder after it has been zipped
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file
+- [ ] Give more options - like - how to not delete the folder when you're done, etc.
 - [ ] Handle rate limiting better (ie - making sure you can recover from it)
 - [ ] Handle errors better if the interwebs goes away for a bit
 - [ ] Figure out what to do if a failed download - delete it?
