@@ -1,7 +1,8 @@
 const fs = require("fs"),
   Slack = require("slack"),
   JSONStream = require("JSONStream"),
-  Bottleneck = require("bottleneck");
+  Bottleneck = require("bottleneck"),
+  archiver = require("archiver");
 
 /**
  * Main Class
@@ -24,6 +25,9 @@ class SlackConversationExport {
           this.exportUsers(destination),
           this.exportConversations(destination)
         ]);
+      })
+      .then(([destination]) => {
+        return this.zip(destination);
       })
       .then(() => {
         this.logger.info("End export");
@@ -67,6 +71,7 @@ class SlackConversationExport {
       this.logger.debug("Closing user streams.");
       jsonwriter.end();
       this.logger.info("Finished retrieving users.");
+      return destination;
     });
   }
 
@@ -134,6 +139,7 @@ class SlackConversationExport {
       this.logger.debug("Closing conversations streams.");
       jsonwriter.end();
       this.logger.info("Finished retrieving conversations.");
+      return destination;
     });
   }
 
@@ -187,6 +193,34 @@ class SlackConversationExport {
       this.logger.info(
         "Finished retrieving individual conversation " + channelId
       );
+    });
+  }
+
+  zip(sourceFolder) {
+    return new Promise(resolve => {
+      // this cleverly puts it in the same folder as the named folder with that as the zip name
+      const zipFile = sourceFolder + ".zip";
+
+      this.logger.debug("Creating a zip named " + zipFile);
+
+      const output = fs.createWriteStream(zipFile);
+      output.on("close", () => {
+        resolve(sourceFolder);
+      });
+
+      const zip = archiver("zip", {
+        zlib: { level: 9 }
+      });
+      zip.pipe(output);
+
+      this.logger.info("Adding source folder to zip file", {
+        sourceFolder,
+        zipFile
+      });
+      zip.directory(sourceFolder, false);
+
+      this.logger.debug("Finalize the zip");
+      zip.finalize();
     });
   }
 

@@ -35,7 +35,7 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Zip the output instead? Or give an option to do so
+- [ ] Delete the source folder after it has been zipped
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file
