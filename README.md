@@ -43,3 +43,4 @@ There's a couple things to know about this utility.
 - [ ] Handle errors better if the interwebs goes away for a bit
 - [ ] Figure out what to do if a failed download - delete it?
 - [ ] Download attachments maybe at some point?
+- [ ] Figure out how to download posts
