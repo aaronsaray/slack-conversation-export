@@ -35,6 +35,9 @@ There's a couple things to know about this utility.
 
 ## Todo
 
+- [ ] Add colorization to winston console logging
+- [ ] Add start/end time to the last output
+- [ ] For my own use, have it check on each conversation and only keep ones you're a member of
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file
@@ -44,3 +47,4 @@ There's a couple things to know about this utility.
 - [ ] Figure out what to do if a failed download - delete it?
 - [ ] Download attachments maybe at some point?
 - [ ] Figure out how to download posts
+- [ ] Incremental export based on date option (this won't necessarily be friendly if people alter history tho)
