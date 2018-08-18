@@ -37,10 +37,10 @@ There's a couple things to know about this utility.
 
 - [ ] Add colorization to winston console logging
 - [ ] Add start/end time to the last output
-- [ ] For my own use, have it check on each conversation and only keep ones you're a member of
+- [ ] For my own use, have it check on each conversation and only keep ones you're a member of (first, get user info, then filter each conversation that's mabye public?)
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
-- [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file
+- [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes
 - [ ] Give more options - like - how to not delete the folder when you're done, etc.
 - [ ] Handle rate limiting better (ie - making sure you can recover from it)
 - [ ] Handle errors better if the interwebs goes away for a bit
