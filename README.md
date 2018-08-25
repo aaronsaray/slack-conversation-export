@@ -95,7 +95,7 @@ There's a couple things to know about this utility.
 
 ## Contributing / Code of Conduct
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pull requests to us. All participants must read and agree to the [CODE OF CONDUCT](CODE_OF_CONDUCT.MD).
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for the process for submitting pull requests to us. All participants must read and agree to the [code of conduct](CODE_OF_CONDUCT.md).
 
 ## Versioning
 
@@ -107,7 +107,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Todo
 
