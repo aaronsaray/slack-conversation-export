@@ -8,19 +8,44 @@ This tool currently is a command line script that uses a legacy web token to dow
 
 1. Obtain a [web token](https://api.slack.com/custom-integrations/legacy-tokens) to use on the command line.
 
-2. Make command executable (for example:)
+2. Run this from the command line:
 
-`chmod +x index.js`
-
-3. Run this from the command line:
-
-`./index.js -t MY_TOKEN_HERE -d PATH_TO_EXPORT_DIRECTORY`
+`slack-conversation-export -t MY_TOKEN_HERE -d PATH_TO_EXPORT_DIRECTORY`
 
 The script will create a folder named after the current date+time in the export directory. Inside of there, it will create the following files:
 
 - **users.json** The users you have access to view
 - **conversations.json** The meta information about all the conversations you're part of
 - **ABC###.json** The conversations you have access to view. This includes public channels, private channels you're a member of, DM's and multi-person-DMs. `ABC###` refers to the internal conversation identifier.
+
+### Configuration Options
+
+#### Command Line Options
+
+`-t` or `--token` Your slack web legacy token
+`-d` or `--destination` The folder where your export should build your dated folder/zip
+
+#### Environment Variables
+
+It's also possible to send through environment variables for the command line options. These are prefixed with `SLACK_CONVERSATION_EXPORT`. For example:
+
+`SLACK_CONVERSATION_EXPORT_DESTINATION=./my-folder slack-conversation-export -t my-token-here`
+
+You could also add those to your current environment so they do not show up in bash history. This would be a good idea for your private legacy token.
+
+If you have multiple slacks to export, you could use multiple private slack tokens in your environment, then call the command twice, alternating the environment variable. For example:
+
+```
+export SLACK_ONE_TOKEN=abc
+export SLACK_TWO_TOKEN=def
+```
+
+Then
+
+```
+SLACK_CONVERSATION_EXPORT_TOKEN="$SLACK_ONE_TOKEN" slack-conversation-export -d ./slack-one-dir
+SLACK_CONVERSATION_EXPORT_TOKEN="$SLACK_TWO_TOKEN" slack-conversation-export -d ./slack-two-dir
+```
 
 ## Viewing Content
 
@@ -37,7 +62,6 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Handle token in env too instead of command line (I'm lookin at you .bash_history)
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes

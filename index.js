@@ -34,6 +34,7 @@ const options = require("yargs")
     demand: true,
     describe: "The source destination for the date-time named folder."
   })
+  .env("SLACK_CONVERSATION_EXPORT")
   .help().argv;
 
 // initial start
