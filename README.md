@@ -35,7 +35,6 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Add colorization to winston console logging
 - [ ] Add start/end time to the last output
 - [ ] For my own use, have it check on each conversation and only keep ones you're a member of (first, get user info, then filter each conversation that's mabye public?)
 - [ ] Unit tests and include travis ci/coveralls info

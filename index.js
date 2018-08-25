@@ -13,6 +13,7 @@ const path = require("path"),
 const logger = winston.createLogger({
   level: "debug",
   format: winston.format.combine(
+    winston.format.colorize(),
     winston.format.timestamp(),
     winston.format.simple()
   ),
