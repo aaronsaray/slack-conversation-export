@@ -34,8 +34,16 @@ const options = require("yargs")
     demand: true,
     describe: "The source destination for the date-time named folder."
   })
+  .option("l", {
+    alias: "log-level",
+    describe: "The npm log level we should honor.",
+    choices: Object.keys(logger.levels)
+  })
   .env("SLACK_CONVERSATION_EXPORT")
   .help().argv;
+
+// set the log format
+logger.level = options["log-level"];
 
 // initial start
 logger.info("Process timer start now.");
