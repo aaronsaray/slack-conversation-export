@@ -4,6 +4,8 @@ Want to archive your Slack conversations? This might be the tool for you!
 
 `slack-conversation-export` is a command line script and library that allow you to export your Slack conversations into JSON files. It's **important** to note that this is about exporting your participation, not your entire Slack space. Basically that means that it will download all things you're an active participant of, not _all_ of the information. This means all private IMs (single and group), all private channels you belong to, and only public channels you also belong to. (It will not download _all_ public channels).
 
+**Trademark / Association** Please note that this package is not associated with, endorsed or supported by Slack.
+
 ## Installation
 
 Running as a command line script? Install it globally:
@@ -111,4 +113,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Todo
 
-There are a number of todos listed on the [issues page](https://github.com/aaronsaray/slack-conversation-export/issues)  Please review those to see the next steps of this project.
+There are a number of todos listed on the [issues page](https://github.com/aaronsaray/slack-conversation-export/issues) Please review those to see the next steps of this project.

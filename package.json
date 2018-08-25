@@ -1,7 +1,11 @@
 {
   "name": "slack-conversation-export",
-  "version": "0.0.1",
-  "description": "Export Slack Conversations",
+  "version": "1.0.0",
+  "description": "Export Slack conversations you participate in to JSON files",
+  "keywords": [
+    "slack",
+    "export"
+  ],
   "main": "lib/slack-conversation-export.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -11,6 +15,10 @@
     "url": "git+https://github.com/aaronsaray/slack-conversation-export.git"
   },
   "author": "Aaron Saray",
+  "homepage": "https://github.com/aaronsaray/slack-conversation-export",
+  "bugs": {
+    "url": "https://github.com/aaronsaray/slack-conversation-export/issues"
+  },
   "license": "MIT",
   "dependencies": {
     "JSONStream": "^1.3.3",
