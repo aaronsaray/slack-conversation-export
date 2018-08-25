@@ -2,6 +2,8 @@
 
 Want to archive your Slack conversations? This might be the tool for you!
 
+This tool currently is a command line script that uses a legacy web token to download _your_ conversation history. This is not the entire history of the slack workspace, only conversations you're part of. This means all private IMs, all private channels and all public channels that you've joined.
+
 ## Usage
 
 1. Obtain a [web token](https://api.slack.com/custom-integrations/legacy-tokens) to use on the command line.
@@ -35,12 +37,11 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] For my own use, have it check on each conversation and only keep ones you're a member of (first, get user info, then filter each conversation that's mabye public?)
-- [ ] Unit tests and include travis ci/coveralls info
 - [ ] Handle token in env too instead of command line (I'm lookin at you .bash_history)
 - [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes
+- [ ] Unit tests and include travis ci/coveralls info
 - [ ] Give more options - like - how to not delete the folder when you're done, etc.
 - [ ] Handle rate limiting better (ie - making sure you can recover from it)
 - [ ] Handle errors better if the interwebs goes away for a bit

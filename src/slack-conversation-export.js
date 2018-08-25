@@ -20,7 +20,7 @@ class SlackConversationExport {
   export() {
     this.logger.info("Begin export");
 
-    this.createDateTimeFolder()
+    return this.createDateTimeFolder()
       .then(destination => {
         return Promise.all([
           this.exportUsers(destination),
@@ -79,7 +79,7 @@ class SlackConversationExport {
 
   exportConversations(destination) {
     const userFile = destination + "/conversations.json";
-    this.logger.info("Begin user export to " + userFile);
+    this.logger.info("Begin conversation export to " + userFile);
 
     const jsonwriter = JSONStream.stringify("[", ",", "]");
     const writeStream = fs.createWriteStream(userFile);
@@ -117,15 +117,20 @@ class SlackConversationExport {
           let childPromises = [];
 
           results.channels.forEach(channel => {
-            jsonwriter.write(channel);
+            // only write to channel list and issue download command if you're a member
 
-            childPromises.push(
-              this.exportIndividualConversation(
-                channel,
-                destination,
-                tier3MethodLimiterForConversationHistory
-              )
-            );
+            // if is_im, is_member doesn't exist.  on all other times, is_member is true or false
+            if (channel.is_im || channel.is_member) {
+              jsonwriter.write(channel);
+
+              childPromises.push(
+                this.exportIndividualConversation(
+                  channel,
+                  destination,
+                  tier3MethodLimiterForConversationHistory
+                )
+              );
+            }
           });
 
           if (results.response_metadata.next_cursor) {
@@ -266,7 +271,7 @@ class PublicSlackConversationExport {
   }
 
   export() {
-    publicSlackConversationExport.export();
+    return publicSlackConversationExport.export();
   }
 }
 

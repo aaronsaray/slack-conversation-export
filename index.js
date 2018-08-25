@@ -50,7 +50,7 @@ const exporter = new SlackConversationExport(
   options.token,
   rootDestination
 );
-exporter.export();
-
-const elapsedSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
-logger.info(`Process finished with elapsed seconds ${elapsedSeconds}`);
+exporter.export().then(() => {
+  const elapsedSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
+  logger.info(`Process finished with elapsed seconds ${elapsedSeconds}`);
+});
