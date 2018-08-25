@@ -8,7 +8,7 @@
 const path = require("path"),
   fs = require("fs"),
   winston = require("winston"),
-  SlackConversationExport = require("./src/slack-conversation-export");
+  SlackConversationExport = require("../lib/slack-conversation-export");
 
 const logger = winston.createLogger({
   level: "debug",
