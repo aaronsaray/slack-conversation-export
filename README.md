@@ -62,7 +62,6 @@ There's a couple things to know about this utility.
 
 ## Todo
 
-- [ ] Debug logging seems to write at bottleneck step registration, not execution
 - [ ] Better logging configuration for Winston
 - [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes
 - [ ] Unit tests and include travis ci/coveralls info

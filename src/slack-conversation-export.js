@@ -54,10 +54,12 @@ class SlackConversationExport {
 
     const pager = nextCursor => {
       page++;
-      this.logger.debug("Retrieving users page " + page, { nextCursor });
 
       return tier2MethodLimiterForUsersList
-        .schedule(this.slack.users.list, { limit: 100, cursor: nextCursor })
+        .schedule(() => {
+          this.logger.debug("Retrieving users page " + page, { nextCursor });
+          return this.slack.users.list({ limit: 100, cursor: nextCursor });
+        })
         .then(results => {
           results.members.forEach(member => {
             jsonwriter.write(member);
@@ -102,16 +104,18 @@ class SlackConversationExport {
 
     const pager = nextCursor => {
       page++;
-      this.logger.debug("Retrieving conversations page " + page, {
-        nextCursor
-      });
 
       return tier2MethodLimiterForConversationsList
-        .schedule(this.slack.conversations.list, {
-          limit: 100,
-          cursor: nextCursor,
-          exclude_archived: false,
-          types: "public_channel,private_channel,mpim,im"
+        .schedule(() => {
+          this.logger.debug("Retrieving conversations page " + page, {
+            nextCursor
+          });
+          return this.slack.conversations.list({
+            limit: 100,
+            cursor: nextCursor,
+            exclude_archived: false,
+            types: "public_channel,private_channel,mpim,im"
+          });
         })
         .then(results => {
           let childPromises = [];
@@ -167,18 +171,20 @@ class SlackConversationExport {
 
     const pager = nextCursor => {
       page++;
-      this.logger.debug(
-        "Retrieving individual conversation " + channelId + " page " + page,
-        {
-          nextCursor
-        }
-      );
 
       return tier3MethodLimiterForConversationHistory
-        .schedule(this.slack.conversations.history, {
-          channel: channelId,
-          limit: 100,
-          cursor: nextCursor
+        .schedule(() => {
+          this.logger.debug(
+            "Retrieving individual conversation " + channelId + " page " + page,
+            {
+              nextCursor
+            }
+          );
+          return this.slack.conversations.history({
+            channel: channelId,
+            limit: 100,
+            cursor: nextCursor
+          });
         })
         .then(results => {
           results.messages.forEach(message => {
