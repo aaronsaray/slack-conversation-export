@@ -72,3 +72,4 @@ There's a couple things to know about this utility.
 - [ ] Download attachments maybe at some point?
 - [ ] Figure out how to download posts
 - [ ] Incremental export based on date option (this won't necessarily be friendly if people alter history tho)
+- [ ] Add github standard contribution notes, code of conduct, etc
