@@ -36,6 +36,10 @@ const options = require("yargs")
   })
   .help().argv;
 
+// initial start
+logger.info("Process timer start now.");
+const startTime = new Date();
+
 // resolve and test access
 const rootDestination = path.resolve(options.destination);
 logger.debug("Testing access to write to filesystem", { rootDestination });
@@ -47,3 +51,6 @@ const exporter = new SlackConversationExport(
   rootDestination
 );
 exporter.export();
+
+const elapsedSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
+logger.info(`Process finished with elapsed seconds ${elapsedSeconds}`);
