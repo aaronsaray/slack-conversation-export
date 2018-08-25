@@ -111,12 +111,4 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Todo
 
-- [ ] Publish on npm
-- [ ] Unit tests and include travis ci/coveralls info
-- [ ] Give more options - like - how to not delete the folder when you're done, etc.
-- [ ] Handle rate limiting better (ie - making sure you can recover from it)
-- [ ] Handle errors better if the interwebs goes away for a bit
-- [ ] Figure out what to do if a failed download - delete it?
-- [ ] Download attachments maybe at some point?
-- [ ] Figure out how to download posts
-- [ ] Incremental export based on date option (this won't necessarily be friendly if people alter history tho)
+There are a number of todos listed on the [issues page](https://github.com/aaronsaray/slack-conversation-export/issues)  Please review those to see the next steps of this project.
