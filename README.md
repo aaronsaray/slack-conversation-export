@@ -63,13 +63,15 @@ There's a couple things to know about this utility.
 ## Todo
 
 - [ ] Better logging configuration for Winston
-- [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes
-- [ ] Unit tests and include travis ci/coveralls info
 - [ ] Give more options - like - how to not delete the folder when you're done, etc.
+- [ ] Separate out the package better so that people can use my downloading/parsing without having to write to a file, general refactor into classes
+- [ ] Fix up the readme
+- [ ] Add github standard contribution notes, code of conduct, etc
+- [ ] Publish on npm
+- [ ] Unit tests and include travis ci/coveralls info
 - [ ] Handle rate limiting better (ie - making sure you can recover from it)
 - [ ] Handle errors better if the interwebs goes away for a bit
 - [ ] Figure out what to do if a failed download - delete it?
 - [ ] Download attachments maybe at some point?
 - [ ] Figure out how to download posts
 - [ ] Incremental export based on date option (this won't necessarily be friendly if people alter history tho)
-- [ ] Add github standard contribution notes, code of conduct, etc
