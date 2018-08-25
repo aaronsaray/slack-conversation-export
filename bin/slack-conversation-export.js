@@ -37,6 +37,7 @@ const options = require("yargs")
   .option("l", {
     alias: "log-level",
     describe: "The npm log level we should honor.",
+    default: "debug",
     choices: Object.keys(logger.levels)
   })
   .env("SLACK_CONVERSATION_EXPORT")
@@ -59,6 +60,7 @@ const exporter = new SlackConversationExport(
   options.token,
   rootDestination
 );
+
 exporter.export().then(() => {
   const elapsedSeconds = (new Date().getTime() - startTime.getTime()) / 1000;
   logger.info(`Process finished with elapsed seconds ${elapsedSeconds}`);
